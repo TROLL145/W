@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ebook Store</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- 🔐 SECURITY (PAYPAL-SAFE CSP) -->
+<meta http-equiv="Content-Security-Policy"
+content="
+default-src 'self';
+script-src 'self' 'unsafe-inline' https://www.paypal.com https://www.paypalobjects.com;
+style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
+font-src 'self' https://cdnjs.cloudflare.com;
+img-src 'self' data: https:;
+frame-src https://www.paypal.com https://www.paypalobjects.com;
+frame-ancestors 'none';
+connect-src https://www.paypal.com https://www.paypalobjects.com;
+form-action https://www.paypal.com;
+base-uri 'self';
+">
+
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="referrer" content="no-referrer">
+
+<script>
+if (window.top !== window.self) {
+  window.top.location = window.self.location;
+}
+</script>
+
+<script src="https://www.paypal.com/sdk/js?client-id=AW-MeifrBMtAr5ZHd8mXwo3n8S7jmb3GaOpw7lV69c28PrI2cy44n3cmMj1CFt2KbhgvtCbv9_9rSpvm&currency=USD"></script>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root{--gold:#c9a24d;--bg:#0b0b0b;--card:#151515}
+*{box-sizing:border-box}
+body{margin:0;font-family:Segoe UI,Arial;background:var(--bg);color:#eee}
+
+/* NAV */
+nav{
+  background:#000;
+  padding:14px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.brand{color:var(--gold);font-weight:800;letter-spacing:3px;font-size:20px}
+.menu{display:flex;gap:26px;align-items:center}
+.menu a{
+  color:var(--gold);
+  cursor:pointer;
+  text-decoration:none;
+  font-size:18px;
+}
+.burger{display:none;color:var(--gold);font-size:22px;cursor:pointer}
+
+@media(max-width:768px){
+  .menu{
+    position:absolute;
+    top:60px;
+    left:0;
+    width:100%;
+    background:#000;
+    flex-direction:row;
+    justify-content:space-around;
+    display:none;
+    padding:18px 0;
+  }
+  .menu.active{display:flex}
+  .burger{display:block}
+}
+
+/* SECTIONS */
+section{display:none;padding:28px}
+section.active{display:block}
+
+/* HERO */
+.hero{text-align:center;margin-bottom:40px}
+.word-logo{font-size:48px;font-weight:900;letter-spacing:6px;color:var(--gold)}
+.word-tagline{font-size:14px;color:#aaa;letter-spacing:2px;margin-top:8px}
+
+/* ICON ROW */
+.icon-row{display:flex;justify-content:center;gap:30px;margin-top:20px}
+.icon-row div{display:flex;align-items:center;gap:8px;color:var(--gold);font-size:14px}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px}
+
+/* CARD */
+.card{
+  background:var(--card);
+  border-radius:12px;
+  padding:14px;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+}
+.card img{width:100%;height:260px;object-fit:cover;border-radius:8px}
+.card .title{color:var(--gold);font-weight:bold;margin:6px 0}
+.card .info{color:#bbb;font-size:14px;flex-grow:1}
+.card button{
+  width:100%;
+  padding:10px;
+  background:#ffc439;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+/* BOX */
+.box{
+  max-width:420px;
+  margin:auto;
+  background:var(--card);
+  padding:20px;
+  border-radius:12px;
+}
+
+/* CONTACT ICON BUTTONS */
+.contact-buttons{
+  display:flex;
+  justify-content:center;
+  gap:20px;
+  margin-top:10px;
+}
+.contact-buttons a{
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:#000;
+  border:1px solid var(--gold);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--gold);
+  font-size:22px;
+  text-decoration:none;
+  transition:.25s;
+}
+.contact-buttons a:hover{
+  background:var(--gold);
+  color:#000;
+  transform:translateY(-4px);
+}
+
+/* ✅ OWNER PROFILE MODAL */
+.owner-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+}
+.owner-modal.active{display:flex}
+.owner-box{
+  background:var(--card);
+  padding:24px;
+  border-radius:14px;
+  text-align:center;
+  width:320px;
+}
+.owner-box img{
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid var(--gold);
+  margin-bottom:12px;
+}
+.owner-box h3{color:var(--gold);margin:6px 0}
+.owner-box p{color:#ccc;font-size:14px}
+.owner-close{
+  margin-top:12px;
+  cursor:pointer;
+  color:var(--gold);
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+  <div class="brand">EBOOKS</div>
+
+  <div class="burger" onclick="toggleMenu()">
+    <i class="fas fa-bars"></i>
+  </div>
+
+  <!-- ✅ ICON MENU + OWNER ICON -->
+  <div class="menu" id="menu">
+    <a onclick="show('home')" title="Home"><i class="fas fa-house"></i></a>
+    <a onclick="show('ebooks')" title="Ebooks"><i class="fas fa-book"></i></a>
+    <a onclick="show('contact')" title="Contact"><i class="fas fa-envelope"></i></a>
+    <a onclick="openOwner()" title="Owner"><i class="fas fa-user"></i></a>
+  </div>
+</nav>
+
+<section id="home" class="active">
+  <div class="hero">
+    <div class="word-logo">EBOOKS</div>
+    <div class="word-tagline">PREMIUM DIGITAL LIBRARY</div>
+    <div class="icon-row">
+      <div><i class="fas fa-lock"></i> Secure</div>
+      <div><i class="fas fa-bolt"></i> Instant</div>
+      <div><i class="fas fa-download"></i> Download</div>
+    </div>
+  </div>
+  <div class="grid" id="hotEbooks"></div>
+</section>
+
+<section id="ebooks">
+  <h2>All Ebooks</h2>
+  <div class="grid" id="ebookList"></div>
+</section>
+
+<section id="payment">
+  <h2>Payment</h2>
+  <div class="box">
+    <p id="paymentInfo"></p>
+    <div id="paypal-button-container"></div>
+  </div>
+</section>
+
+<section id="contact">
+  <h2>Contact</h2>
+  <div class="box"></div>
+    <div class="contact-buttons">
+      <a href="https://facebook.com/Juandawjdjd" target="_blank"><i class="fab fa-facebook-f"></i></a>
+      <a href="mailto:your@email.com"><i class="fas fa-envelope"></i></a>
+    </div>
+  </div>
+</section>
+
+<!-- ✅ OWNER PROFILE MODAL -->
+<div class="owner-modal" id="ownerModal">
+  <div class="owner-box">
+    <img src="https://via.placeholder.com/200" alt="Owner">
+    <h3>Justine Dave D. Inawasan</h3>
+    <p>Age: 22</p>
+    <p>Phone: +63 900 000 0000</p>
+    <div class="owner-close" onclick="closeOwner()">Close</div>
+  </div>
+</div>
+
+<script>
+const ebooks=[
+ {title:"Ebook 1",price:"5.00",info:"Learn fundamentals.",image:"https://via.placeholder.com/400x600",download:"#"},
+ {title:"Ebook 2",price:"7.00",info:"Advanced strategies.",image:"https://via.placeholder.com/400x600",download:"#"}
+];
+
+function ebookCard(e){
+ const d=document.createElement("div");
+ d.className="card";
+ d.innerHTML=`<img src="${e.image}">
+ <div class="title">${e.title}</div>
+ <div>$${e.price}</div>
+ <div class="info">${e.info}</div>
+ <button onclick='startPayment(${JSON.stringify(e)})'>Buy Now</button>`;
+ return d;
+}
+ebooks.forEach(e=>ebookList.appendChild(ebookCard(e)));
+hotEbooks.appendChild(ebookCard(ebooks[0]));
+
+function show(id){
+ document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ menu.classList.remove("active");
+}
+function toggleMenu(){menu.classList.toggle("active")}
+
+function startPayment(e){
+ show("payment");
+ paymentInfo.textContent=`Buying: ${e.title} ($${e.price})`;
+ paypal.Buttons({
+  createOrder:(d,a)=>a.order.create({purchase_units:[{amount:{value:e.price}}]}),
+  onApprove:(d,a)=>a.order.capture().then(()=>alert("Payment successful"))
+ }).render("#paypal-button-container");
+}
+
+/* OWNER MODAL */
+function openOwner(){document.getElementById("ownerModal").classList.add("active")}
+function closeOwner(){document.getElementById("ownerModal").classList.remove("active")}
+</script>
+
+</body>
+</html>
