@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Luxury Collection</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- ================= SECURITY META ================= -->
+<meta http-equiv="Content-Security-Policy"
+content="
+default-src 'self' https://api.countapi.xyz;
+img-src 'self' data:;
+style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
+script-src 'self' 'unsafe-inline' https://api.countapi.xyz;
+font-src https://cdnjs.cloudflare.com;
+frame-ancestors 'none';
+base-uri 'self';
+form-action 'self';
+">
+
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="no-referrer">
+<meta http-equiv="Permissions-Policy"
+content="camera=(), microphone=(), geolocation=()">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+crossorigin="anonymous">
+
+<style>
+:root{
+  --gold:#c9a24d;
+  --bg:#0b0b0b;
+  --card:#151515;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Segoe UI,Arial;
+  background:var(--bg);
+  color:#eee;
+}
+
+/* NAV */
+nav{
+  background:#000;
+  border-bottom:1px solid #222;
+  padding:14px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.brand{color:var(--gold);font-weight:bold;letter-spacing:2px}
+.menu{display:flex;gap:24px}
+.menu a{color:var(--gold);text-decoration:none;font-weight:600;cursor:pointer}
+.burger{display:none;color:var(--gold);font-size:22px;cursor:pointer}
+@media(max-width:768px){
+  .menu{
+    position:absolute;
+    top:60px;
+    left:0;
+    width:100%;
+    background:#000;
+    flex-direction:column;
+    display:none;
+    padding:20px 0;
+  }
+  .menu.active{display:flex}
+  .burger{display:block}
+}
+
+/* SECTIONS */
+section{display:none;padding:28px}
+section.active{display:block}
+
+/* HERO */
+.hero{text-align:center}
+.hero h1{color:var(--gold);letter-spacing:2px}
+
+/* PRODUCTS */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:22px;
+}
+.card{
+  background:var(--card);
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 0 18px #000;
+}
+.card img{
+  width:100%;
+  height:240px;
+  object-fit:cover;
+  cursor:pointer;
+}
+.card-body{padding:14px}
+.card-body p{margin:6px 0;font-size:14px}
+.card-body b{color:var(--gold)}
+button{
+  width:100%;
+  padding:10px;
+  background:#1877f2;
+  border:none;
+  color:#fff;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+/* CONTACT */
+.contact-box{
+  max-width:420px;
+  margin:auto;
+  background:var(--card);
+  padding:20px;
+  border-radius:12px;
+}
+.contact-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:12px 0;
+}
+.contact-row i{color:var(--gold)}
+.contact-row a{color:#ccc;text-decoration:none}
+
+/* MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:#000c;
+  display:none;
+  justify-content:center;
+  align-items:center;
+}
+.modal-box{
+  background:#111;
+  padding:20px;
+  max-width:360px;
+  border-radius:12px;
+}
+.close{color:var(--gold);text-align:right;cursor:pointer}
+.toast{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#111;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:6px;
+  display:none;
+  box-shadow:0 0 10px #000;
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+  <div class="brand">LUXURY</div>
+  <div class="burger" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+  <div class="menu" id="menu">
+    <a onclick="show('home')">Home</a>
+    <a onclick="show('watches')">Watches</a>
+    <a onclick="show('bags')">Bags</a>
+    <a onclick="show('about')">About</a>
+    <a onclick="show('contact')">Contact</a>
+  </div>
+</nav>
+
+<section id="home" class="active">
+  <div class="hero">
+    <h1>LUXURY COLLECTION</h1>
+    <p>Hot Picks</p>
+  </div>
+
+  <!-- ✅ REAL VISITOR COUNTER (ADDED) -->
+  <div style="margin:20px auto;max-width:320px;background:#151515;
+  padding:14px;border-radius:12px;text-align:center;box-shadow:0 0 15px #000">
+    👁️ Real Visitors<br>
+    <span id="visits" style="color:#c9a24d;font-size:22px;font-weight:bold">
+      Loading...
+    </span>
+  </div>
+
+  <h2>🔥 Watches</h2>
+  <div class="grid" id="hotWatches"></div>
+
+  <h2>🔥 Bags</h2>
+  <div class="grid" id="hotBags"></div>
+</section>
+
+<section id="watches">
+  <h2>Watches</h2>
+  <div class="grid" id="watchList"></div>
+</section>
+
+<section id="bags">
+  <h2>Bags</h2>
+  <div class="grid" id="bagList"></div>
+</section>
+
+<section id="about">
+  <h2>About</h2>
+  <p>Premium curated luxury items. Direct message ordering.</p>
+</section>
+
+<section id="contact">
+  <h2>Contact</h2>
+  <div class="contact-box">
+    <div class="contact-row"><i class="fas fa-user"></i><span id="cName"></span></div>
+    <div class="contact-row"><i class="fab fa-facebook"></i><a id="cFb" target="_blank"></a></div>
+    <div class="contact-row"><i class="fab fa-tiktok"></i><a id="cTt" target="_blank"></a></div>
+    <div class="contact-row"><i class="fas fa-phone"></i><span id="cPhone"></span></div>
+  </div>
+</section>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="close" onclick="closeModal()">✖</div>
+    <img id="mImg" style="width:100%;border-radius:10px">
+    <p><b id="mName"></b></p>
+    <p id="mVersion"></p>
+    <p id="mInfo"></p>
+  </div>
+</div>
+
+<div class="toast" id="toast">Message copied. Paste it in Messenger.</div>
+
+<script>
+/* CLICKJACKING */
+if (self !== top) document.body.innerHTML='';
+
+/* STORE DATA */
+const STORE=Object.freeze({
+ facebookUser:"Juandawjdjd",
+ contact:{
+  name:"Justine Dave D. Inawasan",
+  fb:"https://facebook.com/Juandawjdjd",
+  tiktok:"https://tiktok.com/@yourtiktok",
+  phone:"+63 9xxxxxxxxx"
+ },
+ products:{
+  watches:[
+   {name:"Watch #1",version:"Automatic",info:"Steel case",img:"watch1.jpg",msg:"I want Watch #1"},
+   {name:"Watch #2",version:"Premium",info:"Luxury finish",img:"watch2.jpg",msg:"I want Watch #2"},
+   {name:"Watch #3",version:"Classic",info:"Elegant build",img:"watch3.jpg",msg:"I want Watch #3"},
+   {name:"Watch #4",version:"Edition",info:"Heavy quality",img:"watch4.jpg",msg:"I want Watch #4"}
+  ],
+  bags:[
+   {name:"Bag #1",version:"Large",info:"Leather",img:"bag1.jpg",msg:"I want Bag #1"},
+   {name:"Bag #2",version:"Classic",info:"Premium stitch",img:"bag2.jpg",msg:"I want Bag #2"},
+   {name:"Bag #3",version:"Edition",info:"Luxury style",img:"bag3.jpg",msg:"I want Bag #3"},
+   {name:"Bag #4",version:"Large",info:"Elegant",img:"bag4.jpg",msg:"I want Bag #4"},
+   {name:"Bag #5",version:"Premium",info:"Strong build",img:"bag5.jpg",msg:"I want Bag #5"},
+   {name:"Bag #6",version:"Classic",info:"High quality",img:"bag6.jpg",msg:"I want Bag #6"},
+   {name:"Bag #7",version:"Edition",info:"Luxury",img:"bag7.jpg",msg:"I want Bag #7"},
+   {name:"Bag #8",version:"Large",info:"Stylish",img:"bag8.jpg",msg:"I want Bag #8"}
+  ]
+ }
+});
+
+/* RENDER */
+function createCard(p){
+ const d=document.createElement("div");
+ d.className="card";
+ const i=document.createElement("img");
+ i.src=p.img;i.onclick=()=>openModal(p);
+ const b=document.createElement("div");
+ b.className="card-body";
+ b.innerHTML=`<p><b>Product:</b> ${p.name}</p>
+ <p><b>Version:</b> ${p.version}</p>
+ <p><b>Info:</b> ${p.info}</p>`;
+ const btn=document.createElement("button");
+ btn.textContent="Want This";btn.onclick=()=>fb(p.msg);
+ b.appendChild(btn);d.append(i,b);return d;
+}
+
+STORE.products.watches.forEach(p=>watchList.appendChild(createCard(p)));
+STORE.products.bags.forEach(p=>bagList.appendChild(createCard(p)));
+STORE.products.watches.slice(0,4).forEach(p=>hotWatches.appendChild(createCard(p)));
+STORE.products.bags.slice(0,8).forEach(p=>hotBags.appendChild(createCard(p)));
+
+function fb(msg){
+ navigator.clipboard.writeText(msg).then(()=>{
+  toast.style.display="block";
+  setTimeout(()=>toast.style.display="none",2000);
+  window.open(`https://m.me/${STORE.facebookUser}`,"_blank");
+ });
+}
+function openModal(p){
+ mImg.src=p.img;mName.textContent=p.name;
+ mVersion.textContent="Version: "+p.version;
+ mInfo.textContent="Info: "+p.info;
+ modal.style.display="flex";
+}
+function closeModal(){modal.style.display="none"}
+function show(id){
+ document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ menu.classList.remove("active");
+}
+function toggleMenu(){menu.classList.toggle("active")}
+
+cName.textContent=STORE.contact.name;
+cFb.textContent=STORE.contact.fb;cFb.href=STORE.contact.fb;
+cTt.textContent=STORE.contact.tiktok;cTt.href=STORE.contact.tiktok;
+cPhone.textContent=STORE.contact.phone;
+
+/* ================= REAL VISITOR COUNTER ================= */
+const VIS_NS="troll145.github.io";
+const VIS_KEY="real-visits";
+const VIS_FLAG="luxury_real_visit_done";
+
+(async()=>{
+ try{
+  if(localStorage.getItem(VIS_FLAG)){
+    const r=await fetch(`https://api.countapi.xyz/get/${VIS_NS}/${VIS_KEY}`);
+    visits.textContent=(await r.json()).value;return;
+  }
+  const r=await fetch(`https://api.countapi.xyz/hit/${VIS_NS}/${VIS_KEY}`);
+  visits.textContent=(await r.json()).value;
+  localStorage.setItem(VIS_FLAG,"1");
+ }catch{visits.textContent="Error"}
+})();
+</script>
+
+</body>
+</html>
